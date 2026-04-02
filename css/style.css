@@ -10,19 +10,20 @@
 }
 
 :root {
-  /* 🎨 Цвета */
-  --color-bg: #0a0a0a;
-  --color-bg-secondary: #141414;
-  --color-bg-tertiary: #1a1a1a;
-  --color-text: #ffffff;
-  --color-text-secondary: #b3b3b3;
-  --color-text-muted: #666666;
-  --color-primary: #e50914;
-  --color-primary-hover: #f40612;
-  --color-primary-light: rgba(229, 9, 20, 0.15);
-  --color-border: #333333;
-  --color-border-light: #444444;
-  --color-warning: #ffd700;
+ /* 🎨 Цвета — ИСПРАВЛЕННЫЙ КОНТРАСТ */
+  --color-bg: #000000;              /* Чёрный — контраст с белым 21:1 */
+  --color-bg-secondary: #121212;    /* Тёмно-серый */
+  --color-bg-tertiary: #1a1a1a;     /* Светлее для карточек */
+  --color-text: #ffffff;            /* Белый текст */
+  --color-text-secondary: #cccccc;  /* ✅ Светлее (был #b3b3b3) — контраст 13:1 */
+  --color-text-muted: #999999;      /* ✅ Светлее (был #666666) — контраст 7:1 */
+  --color-primary: #ff1f2f;         /* ✅ Ярче (был #e50914) — контраст 4.6:1 */
+  --color-primary-hover: #ff3344;
+  --color-primary-light: rgba(255, 31, 47, 0.2);
+  --color-border: #444444;          /* ✅ Светлее (был #333333) */
+  --color-border-light: #555555;
+  --color-warning: #ffd700;         /* Золотой — контраст 12:1 на чёрном */
+  --color-focus: #66ccff;           /* Цвет фокуса для видимости */
   
   /* 📏 Отступы */
   --spacing-xxs: 0.25rem;
@@ -157,7 +158,6 @@ input, select, textarea {
 }
 
 input:focus, select:focus, textarea:focus {
-  outline: none;
   border-color: var(--color-primary);
 }
 
@@ -1561,3 +1561,46 @@ html {
   }
 }
 
+/* Видимый фокус для клавиатурной навигации */
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(102, 204, 255, 0.3);
+}
+
+/* Убираем фокус для мыши (если нужно) */
+:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Фокус для кнопок и ссылок */
+.btn:focus-visible,
+.nav-link:focus-visible,
+.tab:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-primary);
+  color: var(--color-text);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-sm);
+  z-index: 10000;
+  text-decoration: none;
+  font-weight: 600;
+  transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+  top: var(--spacing-md);
+  outline: 3px solid var(--color-focus);
+}

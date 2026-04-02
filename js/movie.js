@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   await loadMovie(movieId);
   await loadReviews(movieId);
+   if (typeof initKeyboardAccessibility === 'function') initKeyboardAccessibility();
 });
 // В js/movies.js, js/movie.js, js/lists.js — после DOMContentLoaded:
 

@@ -8,6 +8,9 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+   <a href="#main-content" class="skip-link">
+    Перейти к основному контенту
+  </a>
   <!-- Шапка сайта -->
   <header class="site-header" role="banner">
     <a href="/" class="logo" aria-label="FILMHUB — главная страница">
@@ -15,17 +18,23 @@
     </a>
     
     <!-- Поиск -->
-    <form id="searchForm" class="search-form" role="search" aria-label="Поиск фильмов">
-      <label for="searchInput" class="visually-hidden">Поиск фильмов</label>
-      <input 
-        type="search" 
-        id="searchInput" 
-        name="q"
-        placeholder="Поиск фильмов..." 
-        aria-label="Введите название фильма"
-      />
-      <button type="submit" aria-label="Найти">🔍</button>
-    </form>
+    <!-- Поиск с aria -->
+<form id="searchForm" class="search-form" role="search" aria-label="Поиск фильмов">
+  <label for="searchInput" class="visually-hidden">Поиск фильмов</label>
+  <input 
+    type="search" 
+    id="searchInput" 
+    name="q"
+    placeholder="Поиск фильмов..." 
+    aria-label="Введите название фильма для поиска"
+    aria-describedby="searchHelp"
+    autocomplete="off"
+  />
+  <span id="searchHelp" class="visually-hidden">
+    Введите минимум 2 символа для поиска
+  </span>
+  <button type="submit" aria-label="Найти фильмы">🔍</button>
+</form>
     
     <!-- Навигация -->
     <nav class="site-nav" aria-label="Основная навигация">
@@ -115,7 +124,23 @@
   <footer class="site-footer" role="contentinfo">
     <p>&copy; 2024 FILMHUB. Все права защищены.</p>
   </footer>
+<!-- Регион для уведомлений -->
+<div 
+  id="liveRegion" 
+  class="visually-hidden" 
+  aria-live="polite" 
+  aria-atomic="true"
+  role="status"
+></div>
 
+<!-- Для ошибок -->
+<div 
+  id="errorRegion" 
+  class="visually-hidden" 
+  aria-live="assertive" 
+  aria-atomic="true"
+  role="alert"
+></div>
   <script src="/js/api.js"></script>
   <script src="/js/auth.service.js"></script>
   <script src="/js/movies.js"></script>

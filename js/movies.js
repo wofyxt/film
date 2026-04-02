@@ -1,13 +1,50 @@
 // js/movies.js
 
+// 🔒 Функция экранирования (защита от XSS + безопасные alt-тексты)
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// 🍔 Бургер-меню (только для .site-header)
+function initBurgerMenu() {
+  const menuToggle = document.querySelector('.site-header .menu-toggle');
+  const siteNav = document.querySelector('.site-header .site-nav');
+  
+  if (menuToggle && siteNav) {
+    menuToggle.addEventListener('click', () => {
+      const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
+      menuToggle.setAttribute('aria-expanded', !expanded);
+      siteNav.classList.toggle('active');
+      menuToggle.textContent = expanded ? '☰' : '✕';
+    });
+    
+    // Закрыть меню при клике на ссылку
+    siteNav.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 768) {
+          siteNav.classList.remove('active');
+          menuToggle.setAttribute('aria-expanded', 'false');
+          menuToggle.textContent = '☰';
+        }
+      });
+    });
+  }
+}
+
+// === ИНИЦИАЛИЗАЦИЯ ===
 document.addEventListener('DOMContentLoaded', async () => {
   updateAuthLink();
+  initBurgerMenu(); // ✅ Инициализация бургера
   await loadGenres();
   await loadMovies();
   
-  document.getElementById('searchForm').addEventListener('submit', handleSearch);
-  document.getElementById('applyFilters').addEventListener('click', applyFilters);
-  document.getElementById('resetFilters').addEventListener('click', resetFilters);
+  document.getElementById('searchForm')?.addEventListener('submit', handleSearch);
+  document.getElementById('applyFilters')?.addEventListener('click', applyFilters);
+  document.getElementById('resetFilters')?.addEventListener('click', resetFilters);
+   if (typeof initKeyboardAccessibility === 'function') initKeyboardAccessibility();
 });
 
 function updateAuthLink() {
@@ -26,6 +63,8 @@ async function loadGenres() {
   try {
     const { genres } = await API.getGenres();
     const select = document.getElementById('genreFilter');
+    if (!select) return;
+    
     genres.forEach(genre => {
       const option = document.createElement('option');
       option.value = genre.id;
@@ -39,41 +78,78 @@ async function loadGenres() {
 
 async function loadMovies(filters = {}) {
   const container = document.getElementById('moviesContainer');
+  if (!container) return;
+  
   container.innerHTML = '<div class="loading">Загрузка...</div>';
   
   try {
     const { movies } = await API.getMovies(filters);
     
-    if (movies.length === 0) {
+    if (!movies || movies.length === 0) {
       container.innerHTML = '<p class="no-results">Фильмы не найдены</p>';
       return;
     }
-    
-    // ✅ ИСПРАВЛЕНО: movie.avg_rating вместо movie.rating
-    container.innerHTML = movies.map(movie => `
-      <div class="movie-card" onclick="openMovie(${movie.id})">
-        <img src="${movie.poster_url || '/assets/no-poster.jpg'}" alt="${escapeHtml(movie.title)}">
-        <div class="movie-info">
-          <h3 class="title">${escapeHtml(movie.title)}</h3>
-          <div class="meta">
-            <span>${movie.year}</span>
-            <span class="rating">★ ${movie.avg_rating || 'N/A'}</span>
-          </div>
-        </div>
+      // ✅ ГЛОБАЛЬНАЯ ОБРАБОТКА КЛИКОВ И КЛАВИАТУРЫ ДЛЯ КАРТОЧЕК
+  document.addEventListener('click', (e) => {
+    const card = e.target.closest('.movie-card');
+    if (card?.dataset.movieId) window.openMovie(card.dataset.movieId);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    const card = e.target.closest('.movie-card');
+    // Enter или Space на сфокусированной карточке
+    if (card && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault(); // 🔑 Обязательно: блокирует скролл страницы при нажатии Пробела
+      if (card.dataset.movieId) window.openMovie(card.dataset.movieId);
+    }
+  });
+    // ✅ Рендер карточек с безопасными alt-текстами
+    container.innerHTML = movies.map(movie => {
+      // Безопасное экранирование для alt
+      const title = escapeHtml(movie.title);
+      const year = movie.year || '';
+      const poster = movie.poster_url || '/assets/no-poster.jpg';
+      const rating = movie.avg_rating || 'N/A';
+      const id = movie.id;
+      
+     // В movies.map() замените возврат на:
+return `
+  <article 
+    class="movie-card" 
+    tabindex="0" 
+    role="button" 
+    aria-label="Открыть фильм: ${title} (${year} год)" 
+    data-movie-id="${id}"
+  >
+    <img 
+      src="${poster}" 
+      alt="Постер фильма: ${title} (${year} год)" 
+      loading="lazy"
+      width="200"
+      height="300"
+    >
+    <div class="movie-info">
+      <h3 class="title">${title}</h3>
+      <div class="meta">
+        <span>${year}</span>
+        <span class="rating">★ ${rating}</span>
       </div>
-    `).join('');
+    </div>
+  </article>
+`;
+    }).join('');
     
   } catch (error) {
     container.innerHTML = '<p class="error">Ошибка загрузки фильмов</p>';
-    console.error(error);
+    console.error('Ошибка loadMovies:', error);
   }
 }
 
 async function handleSearch(e) {
   e.preventDefault();
-  const query = document.getElementById('searchInput').value.trim();
+  const query = document.getElementById('searchInput')?.value.trim();
   
-  if (query.length < 2) {
+  if (!query || query.length < 2) {
     alert('Введите минимум 2 символа');
     return;
   }
@@ -89,87 +165,79 @@ async function handleSearch(e) {
 function applyFilters() {
   const filters = {};
   
-  const genreId = document.getElementById('genreFilter').value;
-  if (genreId) filters.genre_id = genreId;
+  const genreFilter = document.getElementById('genreFilter');
+  const yearFrom = document.getElementById('yearFrom');
+  const yearTo = document.getElementById('yearTo');
+  const ratingFrom = document.getElementById('ratingFrom');
   
-  const yearFrom = document.getElementById('yearFrom').value;
-  if (yearFrom) filters.year_from = yearFrom;
-  
-  const yearTo = document.getElementById('yearTo').value;
-  if (yearTo) filters.year_to = yearTo;
-  
-  const ratingFrom = document.getElementById('ratingFrom').value;
-  if (ratingFrom) filters.rating_from = ratingFrom;
+  if (genreFilter?.value) filters.genre_id = genreFilter.value;
+  if (yearFrom?.value) filters.year_from = yearFrom.value;
+  if (yearTo?.value) filters.year_to = yearTo.value;
+  if (ratingFrom?.value) filters.rating_from = ratingFrom.value;
   
   loadMovies(filters);
 }
 
 function resetFilters() {
-  document.getElementById('genreFilter').value = '';
-  document.getElementById('yearFrom').value = '';
-  document.getElementById('yearTo').value = '';
-  document.getElementById('ratingFrom').value = '';
+  const genreFilter = document.getElementById('genreFilter');
+  const yearFrom = document.getElementById('yearFrom');
+  const yearTo = document.getElementById('yearTo');
+  const ratingFrom = document.getElementById('ratingFrom');
+  
+  if (genreFilter) genreFilter.value = '';
+  if (yearFrom) yearFrom.value = '';
+  if (yearTo) yearTo.value = '';
+  if (ratingFrom) ratingFrom.value = '';
+  
   loadMovies();
 }
 
-function openMovie(id) {
+// ✅ Глобальная функция для onclick
+window.openMovie = function(id) {
   window.location.href = `/movie.html?id=${id}`;
-}
+};
 
-// ✅ ИСПРАВЛЕНО: movie.avg_rating вместо movie.rating
+// ✅ Рендер для поиска (дублирует loadMovies)
 function renderMovies(movies) {
   const container = document.getElementById('moviesContainer');
+  if (!container) return;
   
-  if (movies.length === 0) {
+  if (!movies || movies.length === 0) {
     container.innerHTML = '<p class="no-results">Ничего не найдено</p>';
     return;
   }
   
-  container.innerHTML = movies.map(movie => `
-    <div class="movie-card" onclick="openMovie(${movie.id})">
-      <img src="${movie.poster_url || '/assets/no-poster.jpg'}" alt="${escapeHtml(movie.title)}">
-      <div class="movie-info">
-        <h3 class="title">${escapeHtml(movie.title)}</h3>
-        <div class="meta">
-          <span>${movie.year}</span>
-          <span class="rating">★ ${movie.avg_rating || 'N/A'}</span>
-        </div>
+  container.innerHTML = movies.map(movie => {
+    const title = escapeHtml(movie.title);
+    const year = movie.year || '';
+    const poster = movie.poster_url || '/assets/no-poster.jpg';
+    const rating = movie.avg_rating || 'N/A';
+    const id = movie.id;
+    
+   // В movies.map() замените возврат на:
+return `
+  <article 
+    class="movie-card" 
+    tabindex="0" 
+    role="button" 
+    aria-label="Открыть фильм: ${title} (${year} год)" 
+    data-movie-id="${id}"
+  >
+    <img 
+      src="${poster}" 
+      alt="Постер фильма: ${title} (${year} год)" 
+      loading="lazy"
+      width="200"
+      height="300"
+    >
+    <div class="movie-info">
+      <h3 class="title">${title}</h3>
+      <div class="meta">
+        <span>${year}</span>
+        <span class="rating">★ ${rating}</span>
       </div>
     </div>
-  `).join('');
-}
-
-// Экранирование для защиты от XSS
-function escapeHtml(text) {
-  if (!text) return '';
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
-
-
-// В js/movies.js, js/movie.js, js/lists.js — после DOMContentLoaded:
-
-// Бургер-меню (только для .site-header)
-const menuToggle = document.querySelector('.site-header .menu-toggle');
-const siteNav = document.querySelector('.site-header .site-nav');
-
-if (menuToggle && siteNav) {
-  menuToggle.addEventListener('click', () => {
-    const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
-    menuToggle.setAttribute('aria-expanded', !expanded);
-    siteNav.classList.toggle('active');
-    menuToggle.textContent = expanded ? '☰' : '✕';
-  });
-  
-  // Закрыть меню при клике на ссылку
-  siteNav.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-      if (window.innerWidth < 768) {
-        siteNav.classList.remove('active');
-        menuToggle.setAttribute('aria-expanded', 'false');
-        menuToggle.textContent = '☰';
-      }
-    });
-  });
+  </article>
+`;
+  }).join('');
 }

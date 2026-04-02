@@ -84,7 +84,24 @@ const API = {
   });
 }
 };
+// utils/accessibility.js
+function announceMessage(message, isError = false) {
+  const region = document.getElementById(isError ? 'errorRegion' : 'liveRegion');
+  if (region) {
+    region.textContent = message;
+    // Очистить через 5 секунд, чтобы не накапливалось
+    setTimeout(() => {
+      if (region.textContent === message) {
+        region.textContent = '';
+      }
+    }, 5000);
+  } else {
+    console.warn('ARIA region not found:', message);
+  }
+}
 
+// Глобально заменяем alert
+window.announce = announceMessage;
 
 
 // Делаем доступным глобально

@@ -4,68 +4,82 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Мои списки — FILMHUB</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- Шапка -->
+  <a href="#main-content" class="skip-link">Перейти к основному контенту</a>
+
   <header class="site-header" role="banner">
-    <a href="/" class="logo">FILM<span>HUB</span></a>
-    <nav class="site-nav" aria-label="Основная навигация">
+    <a href="/" class="logo" aria-label="FILMHUB — на главную">
+      <span>FILM</span>HUB
+    </a>
+
+    <nav class="site-nav" aria-label="Основная навигация" id="site-navigation">
       <ul class="nav-list">
         <li><a href="/index.html" class="nav-link">Каталог</a></li>
-        <li><a href="/lists.html" class="nav-link">Мои списки</a></li>
+        <li><a href="/lists.html" class="nav-link active" aria-current="page">Мои списки</a></li>
         <li><a href="/login.html" class="nav-link" id="authLink">Войти</a></li>
       </ul>
     </nav>
-    <button class="menu-toggle" aria-label="Меню">☰</button>
+
+    <button 
+      class="menu-toggle" 
+      aria-expanded="false" 
+      aria-controls="site-navigation" 
+      aria-label="Открыть меню навигации"
+    >☰</button>
   </header>
 
-  <!-- Основной контент -->
-  <main class="lists-page">
+  <main id="main-content" class="lists-page" role="main" tabindex="-1">
     <h1>Мои списки</h1>
-    
-    <!-- Табы для переключения между списками -->
-    <!-- В lists.html замените блок с табами на этот: -->
-<div class="tabs" role="tablist" aria-label="Типы списков">
-  <button 
-    class="tab active" 
-    role="tab" 
-    aria-selected="true" 
-    aria-controls="watchlist-panel"
-    data-list="watchlist"
-  >
-    Буду смотреть (<span class="tab-count" data-count="watchlist">0</span>)
-  </button>
-  <button 
-    class="tab" 
-    role="tab" 
-    aria-selected="false" 
-    aria-controls="favorites-panel"
-    data-list="favorites"
-  >
-    Избранное (<span class="tab-count" data-count="favorites">0</span>)
-  </button>
-  <button 
-    class="tab" 
-    role="tab" 
-    aria-selected="false" 
-    aria-controls="watched-panel"
-    data-list="watched"
-  >
-    Просмотрено (<span class="tab-count" data-count="watched">0</span>)
-  </button>
-</div>
 
-<!-- Контейнер для фильмов -->
-<div id="moviesList" class="movies-grid" role="tabpanel" aria-live="polite">
-  <div class="loading">Загрузка...</div>
-</div>
+    <!-- 🔹 Табы с ролью tablist -->
+    <div class="tabs" role="tablist" aria-label="Типы списков фильмов">
+      <button 
+        class="tab active" 
+        role="tab" 
+        aria-selected="true" 
+        aria-controls="watchlist-panel" 
+        id="watchlist-tab"
+        data-list="watchlist"
+      >
+        Буду смотреть <span class="tab-count" aria-label="0 фильмов">0</span>
+      </button>
+      <button 
+        class="tab" 
+        role="tab" 
+        aria-selected="false" 
+        aria-controls="favorites-panel" 
+        id="favorites-tab"
+        data-list="favorites"
+        tabindex="-1"
+      >
+        Избранное <span class="tab-count" aria-label="0 фильмов">0</span>
+      </button>
+      <button 
+        class="tab" 
+        role="tab" 
+        aria-selected="false" 
+        aria-controls="watched-panel" 
+        id="watched-tab"
+        data-list="watched"
+        tabindex="-1"
+      >
+        Просмотрено <span class="tab-count" aria-label="0 фильмов">0</span>
+      </button>
+    </div>
 
-   
+    <!-- 🔹 Контент табов -->
+    <section id="moviesList" class="movies-grid" aria-live="polite" aria-busy="false">
+      <p class="loading" role="status">Загрузка...</p>
+    </section>
   </main>
 
+  <footer class="site-footer" role="contentinfo">
+    <p>© 2024 FILMHUB. Все права защищены.</p>
+  </footer>
+
   <script src="/js/api.js"></script>
-  <script src="/js/auth.service.js"></script>
   <script src="/js/lists.js"></script>
 </body>
 </html>
