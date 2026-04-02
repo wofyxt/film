@@ -1604,3 +1604,161 @@ textarea:focus-visible {
   top: var(--spacing-md);
   outline: 3px solid var(--color-focus);
 }
+
+/* ==================== ПАНЕЛЬ ДОСТУПНОСТИ (ВЕРСИЯ ДЛЯ СЛАБОВИДЯЩИХ) ==================== */
+.accessibility-toggle {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  color: var(--color-text);
+  transition: all var(--transition-fast);
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.accessibility-toggle:hover,
+.accessibility-toggle:focus {
+  background: var(--color-primary-light);
+  transform: scale(1.05);
+}
+
+.site-header .accessibility-toggle,
+.header .accessibility-toggle {
+  margin-left: var(--spacing-sm);
+}
+
+.accessibility-toolbar {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  background: var(--color-bg-secondary);
+  border-bottom: 2px solid var(--color-primary);
+  padding: var(--spacing-md) var(--spacing-lg);
+  z-index: 999;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-lg);
+  transition: transform 0.3s ease;
+}
+
+.accessibility-toolbar[hidden] {
+  display: none;
+}
+
+.accessibility-group {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: var(--color-bg-tertiary);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.accessibility-group span {
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-right: var(--spacing-xs);
+}
+
+.accessibility-btn {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.accessibility-btn:hover,
+.accessibility-btn:focus {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+.accessibility-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.close-panel {
+  background: var(--color-primary);
+  border: none;
+  padding: var(--spacing-xs) var(--spacing-md);
+  margin-left: auto;
+}
+
+.close-panel:hover,
+.close-panel:focus {
+  background: var(--color-primary-hover);
+}
+
+@media (max-width: 768px) {
+  .site-header .accessibility-toggle,
+  .header .accessibility-toggle {
+    order: 2;
+    margin-left: auto;
+  }
+  .site-header .menu-toggle {
+    order: 3;
+  }
+  .accessibility-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    top: auto;
+    bottom: 0;
+    border-top: 2px solid var(--color-primary);
+    border-bottom: none;
+  }
+  .accessibility-group {
+    justify-content: space-between;
+  }
+  .close-panel {
+    margin-left: 0;
+  }
+}
+
+/* ==================== МАСШТАБИРОВАНИЕ ШРИФТА И СМЕНА ШРИФТА ==================== */
+body.font-size-150 {
+  --font-size-xs: calc(12px * 1.5);
+  --font-size-sm: calc(14px * 1.5);
+  --font-size-base: calc(16px * 1.5);
+  --font-size-lg: calc(18px * 1.5);
+  --font-size-xl: calc(24px * 1.5);
+  --font-size-xxl: calc(32px * 1.5);
+}
+
+body.font-size-200 {
+  --font-size-xs: calc(12px * 2);
+  --font-size-sm: calc(14px * 2);
+  --font-size-base: calc(16px * 2);
+  --font-size-lg: calc(18px * 2);
+  --font-size-xl: calc(24px * 2);
+  --font-size-xxl: calc(32px * 2);
+}
+
+body.font-arial {
+  --font-family: 'Arial', sans-serif;
+}
+
+body.font-times {
+  --font-family: 'Times New Roman', serif;
+}
+
+body.font-default {
+  --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
