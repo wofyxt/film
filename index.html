@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Каталог фильмов с поиском, фильтрами и оценками">
+  <title>Каталог фильмов — FILMHUB</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Шапка сайта -->
+  <header class="site-header" role="banner">
+    <a href="/" class="logo" aria-label="FILMHUB — главная страница">
+      FILM<span>HUB</span>
+    </a>
+    
+    <!-- Поиск -->
+    <form id="searchForm" class="search-form" role="search" aria-label="Поиск фильмов">
+      <label for="searchInput" class="visually-hidden">Поиск фильмов</label>
+      <input 
+        type="search" 
+        id="searchInput" 
+        name="q"
+        placeholder="Поиск фильмов..." 
+        aria-label="Введите название фильма"
+      />
+      <button type="submit" aria-label="Найти">🔍</button>
+    </form>
+    
+    <!-- Навигация -->
+    <nav class="site-nav" aria-label="Основная навигация">
+      <ul class="nav-list">
+        <li><a href="/index.html" class="nav-link">Каталог</a></li>
+        <li><a href="/lists.html" class="nav-link">Мои списки</a></li>
+        <li><a href="/login.html" class="nav-link" id="authLink">Войти</a></li>
+      </ul>
+    </nav>
+    <button class="menu-toggle" aria-label="Меню">☰</button>
+  </header>
+
+  <!-- Основной контент -->
+  <div class="layout-wrapper">
+    
+    <!-- Боковая панель с фильтрами -->
+    <aside class="filters-sidebar" aria-label="Фильтры фильмов">
+      <h2>Фильтры</h2>
+      
+      <form id="filtersForm">
+        <fieldset>
+          <legend>Жанр</legend>
+          <label for="genreFilter" class="visually-hidden">Выберите жанр</label>
+          <select id="genreFilter" name="genre_id">
+            <option value="">Все жанры</option>
+            <!-- Заполнится через JS -->
+          </select>
+        </fieldset>
+        
+        <fieldset>
+          <legend>Год выпуска</legend>
+          <div class="year-range">
+            <label for="yearFrom">От:</label>
+            <input type="number" id="yearFrom" name="year_from" min="1900" max="2026" placeholder="1900" />
+          </div>
+          <div class="year-range">
+            <label for="yearTo">До:</label>
+            <input type="number" id="yearTo" name="year_to" min="1900" max="2026" placeholder="2026" />
+          </div>
+        </fieldset>
+        
+        <fieldset>
+          <legend>Минимальный рейтинг</legend>
+          <label for="ratingFrom" class="visually-hidden">Рейтинг от</label>
+          <input 
+            type="number" 
+            id="ratingFrom" 
+            name="rating_from" 
+            min="1" 
+            max="10" 
+            placeholder="1-10" 
+          />
+        </fieldset>
+        
+        <div class="filter-actions">
+          <button type="button" id="applyFilters" class="btn btn-primary">Применить</button>
+          <button type="button" id="resetFilters" class="btn btn-outline">Сбросить</button>
+        </div>
+      </form>
+    </aside>
+
+    <!-- Список фильмов -->
+    <main class="movies-main" role="main" aria-label="Каталог фильмов">
+      <h1 class="page-title">Все фильмы</h1>
+      
+      <!-- Результаты поиска (скрыты по умолчанию) -->
+      <section id="searchResults" class="search-results" aria-live="polite" hidden>
+        <h2>Результаты поиска</h2>
+      </section>
+      
+      <!-- Сетка фильмов -->
+      <section aria-label="Список фильмов">
+        <div id="moviesContainer" class="movies-grid">
+          <article class="movie-card loading" aria-busy="true">
+            Загрузка фильмов...
+          </article>
+        </div>
+      </section>
+      
+      <!-- Пагинация -->
+      <nav class="pagination" aria-label="Навигация по страницам" id="pagination"></nav>
+    </main>
+    
+  </div>
+
+  <!-- Подвал -->
+  <footer class="site-footer" role="contentinfo">
+    <p>&copy; 2024 FILMHUB. Все права защищены.</p>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.service.js"></script>
+  <script src="/js/movies.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+DROP TABLE IF EXISTS movies CASCADE;
+
+CREATE TABLE movies (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(200) NOT NULL,
+  description TEXT,
+  year INTEGER NOT NULL,
+  genre_id INTEGER REFERENCES genres(id),
+  poster_url VARCHAR(255),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

@@ -1,0 +1,1563 @@
+/* ==================== FILMHUB — ПОЛНЫЙ CSS ==================== */
+/* Брейкпоинты: 320px | 768px | 1024px | 1440px */
+/* Цветовая схема: чёрный фон + оранжевые акценты */
+
+/* ==================== СБРОС И БАЗА ==================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* 🎨 Цвета */
+  --color-bg: #0a0a0a;
+  --color-bg-secondary: #141414;
+  --color-bg-tertiary: #1a1a1a;
+  --color-text: #ffffff;
+  --color-text-secondary: #b3b3b3;
+  --color-text-muted: #666666;
+  --color-primary: #e50914;
+  --color-primary-hover: #f40612;
+  --color-primary-light: rgba(229, 9, 20, 0.15);
+  --color-border: #333333;
+  --color-border-light: #444444;
+  --color-warning: #ffd700;
+  
+  /* 📏 Отступы */
+  --spacing-xxs: 0.25rem;
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-xxl: 3rem;
+  
+  /* 🔤 Шрифты */
+  --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --font-size-xxl: 32px;
+  
+  /* ⭕ Радиусы */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  
+  /* 🌑 Тени */
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.6);
+  --shadow-primary: 0 4px 20px rgba(229, 9, 20, 0.4);
+  
+  /* ⚡ Анимации */
+  --transition-fast: 150ms ease;
+  --transition-normal: 300ms ease;
+  
+  /* 📐 Layout */
+  --header-height: 70px;
+  --sidebar-width: 280px;
+}
+
+/* Скрытие для скринридеров */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0,0,0,0) !important;
+  border: 0 !important;
+}
+
+/* Базовые стили */
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  background: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Кнопки */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--color-primary);
+  color: var(--color-text);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-primary);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn-outline:hover {
+  background: var(--color-primary);
+  color: var(--color-text);
+}
+
+/* Поля форм */
+input, select, textarea {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  font-family: inherit;
+  transition: border-color var(--transition-fast);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* Алерты */
+.alert {
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-lg);
+  display: none;
+}
+
+.alert.show {
+  display: block;
+}
+
+.alert-error {
+  background: rgba(229, 9, 20, 0.15);
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Загрузка */
+.loading {
+  text-align: center;
+  padding: var(--spacing-xxl);
+  color: var(--color-text-secondary);
+}
+
+/* ==================== ШАПКА — ОБЩИЕ СТИЛИ ==================== */
+.site-header,
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--color-bg-secondary);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid var(--color-border);
+  min-height: var(--header-height);
+}
+
+.logo {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.logo span {
+  color: var(--color-primary);
+}
+
+/* Поиск (только на главной) */
+.search-form {
+  flex: 1;
+  max-width: 400px;
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.search-form input {
+  flex: 1;
+}
+
+.search-form button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-primary);
+  color: var(--color-text);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.search-form button:hover {
+  background: var(--color-primary-hover);
+}
+
+/* Навигация — ОБЩИЕ СТИЛИ */
+.site-nav,
+.nav {
+  margin-left: auto;
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  gap: var(--spacing-sm);
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.nav-link:hover {
+  color: var(--color-text);
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+
+.nav-link.active {
+  color: var(--color-text);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* Бургер-меню (только для .site-header) */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--color-text);
+  font-size: 24px;
+  cursor: pointer;
+  padding: var(--spacing-sm);
+  margin-left: auto;
+}
+
+/* ==================== ОСНОВНОЙ ЛЕЙАУТ ==================== */
+.layout-wrapper {
+  display: flex;
+  flex: 1;
+}
+
+/* Боковая панель (фильтры) */
+.filters-sidebar {
+  width: var(--sidebar-width);
+  padding: var(--spacing-lg);
+  background: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border);
+  position: sticky;
+  top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  overflow-y: auto;
+}
+
+.filters-sidebar h2 {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.filters-sidebar fieldset {
+  border: none;
+  margin: 0 0 var(--spacing-lg) 0;
+  padding: 0;
+}
+
+.filters-sidebar legend {
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.year-range {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.year-range label {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+}
+
+.filter-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+}
+
+.filter-actions .btn {
+  width: 100%;
+}
+
+/* Основной контент */
+.movies-main,
+.lists-page,
+.movie-detail {
+  flex: 1;
+  padding: var(--spacing-xl);
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page-title,
+.lists-page h1 {
+  font-size: var(--font-size-xxl);
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* ==================== СЕТКА ФИЛЬМОВ ==================== */
+.movies-grid {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+
+.movie-card {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.movie-card:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.movie-card img {
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  transition: transform var(--transition-normal);
+}
+
+.movie-card:hover img {
+  transform: scale(1.05);
+}
+
+.movie-info {
+  padding: var(--spacing-md);
+  background: var(--color-bg-tertiary);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  flex: 1;
+}
+
+.movie-info .title {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.movie-info .meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--color-border-light);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.movie-info .rating {
+  color: var(--color-warning);
+  font-weight: 700;
+}
+
+/* Кнопки действий на карточке */
+.movie-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--color-border);
+}
+
+.movie-actions button {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.movie-actions .btn-move {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.movie-actions .btn-move:hover {
+  background: var(--color-primary);
+  color: var(--color-text);
+}
+
+.movie-actions .btn-remove {
+  background: var(--color-primary);
+  color: var(--color-text);
+  flex: 0 0 auto;
+}
+
+.movie-actions .btn-remove:hover {
+  background: var(--color-primary-hover);
+}
+
+/* ==================== СТРАНИЦА ФИЛЬМА ==================== */
+.movie-article {
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.movie-header {
+  display: grid;
+  gap: var(--spacing-xl);
+  padding: var(--spacing-xl);
+}
+
+.movie-poster img {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.movie-meta h1 {
+  font-size: var(--font-size-xxl);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.3;
+}
+
+.movie-info dl {
+  display: grid;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.info-row {
+  display: flex;
+  gap: var(--spacing-sm);
+  color: var(--color-text-secondary);
+}
+
+.info-row dt {
+  font-weight: 600;
+  color: var(--color-text);
+  min-width: 60px;
+}
+
+.movie-description {
+  line-height: 1.8;
+  color: var(--color-text-secondary);
+  margin: var(--spacing-lg) 0;
+}
+
+.movie-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+/* Отзывы */
+.reviews-section {
+  padding: var(--spacing-xl);
+  border-top: 1px solid var(--color-border);
+}
+
+.reviews-section h2 {
+  margin-bottom: var(--spacing-lg);
+}
+
+.review-form {
+  background: var(--color-bg-tertiary);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.review-form fieldset {
+  border: none;
+  margin: 0 0 var(--spacing-md) 0;
+  padding: 0;
+}
+
+.review-form legend {
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+}
+
+.review-form select,
+.review-form textarea {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+}
+
+.review-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.review {
+  background: var(--color-bg-tertiary);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--color-primary);
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.review .author {
+  font-weight: 600;
+}
+
+.review .rating {
+  color: var(--color-warning);
+  font-weight: 700;
+}
+
+.review p {
+  color: var(--color-text-secondary);
+  margin: var(--spacing-sm) 0;
+}
+
+.review .date {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* ==================== СТРАНИЦА СПИСКОВ ==================== */
+.lists-page .movies-grid {
+  margin-left: 0;
+}
+
+/* Табы */
+.tabs {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--color-border);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  flex: 0 0 auto;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.tab:hover {
+  color: var(--color-text);
+  background: var(--color-primary-light);
+}
+
+.tab.active {
+  color: var(--color-text);
+  border-bottom-color: var(--color-primary);
+  background: var(--color-primary);
+  font-weight: 600;
+}
+
+.tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  margin-left: var(--spacing-xs);
+  background: rgba(255,255,255,0.2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+}
+
+/* Пустой список */
+.empty-list {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--spacing-xxl) var(--spacing-lg);
+  background: var(--color-bg-secondary);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-secondary);
+}
+
+.empty-list h3 {
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--spacing-sm);
+}
+
+.empty-list p {
+  margin-bottom: var(--spacing-lg);
+}
+
+.empty-list .btn {
+  display: inline-flex;
+}
+
+/* ==================== АВТОРИЗАЦИЯ (login/register) ==================== */
+.auth-container {
+  max-width: 400px;
+  margin: var(--spacing-xxl) auto;
+  padding: var(--spacing-xl);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+}
+
+.auth-title {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+  font-size: var(--font-size-xxl);
+}
+
+.auth-container form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.auth-container .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.auth-container label {
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.auth-container .btn {
+  width: 100%;
+  padding: var(--spacing-md);
+  font-size: var(--font-size-lg);
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+/* ==================== ПОДВАЛ ==================== */
+.site-footer,
+footer {
+  padding: var(--spacing-lg);
+  text-align: center;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border);
+  margin-top: auto;
+  font-size: var(--font-size-sm);
+}
+
+/* ==================== ПАГИНАЦИЯ ==================== */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-xl);
+}
+
+.pagination button,
+.pagination a {
+  min-width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--spacing-sm);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pagination button:hover,
+.pagination a:hover {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.pagination .active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* ==================== MEDIA QUERIES — АДАПТИВ ==================== */
+
+/* 📱 320px — Мобильные (портрет) — БАЗОВЫЕ СТИЛИ */
+@media (max-width: 375px) {
+  :root {
+    --font-size-base: 14px;
+    --spacing-md: 0.75rem;
+    --spacing-lg: 1rem;
+    --spacing-xl: 1.5rem;
+  }
+  
+  /* Шапка — ОБЩАЯ */
+  .site-header,
+  .header {
+    padding: var(--spacing-sm);
+    flex-wrap: wrap;
+    height: auto;
+    min-height: var(--header-height);
+  }
+  
+  .logo {
+    font-size: var(--font-size-lg);
+  }
+  
+  .search-form {
+    order: 2;
+    max-width: 100%;
+    width: 100%;
+    margin-top: var(--spacing-sm);
+  }
+  
+  /* Бургер только для .site-header */
+  .site-header .menu-toggle {
+    display: block;
+    order: 3;
+  }
+  
+  /* Навигация для .site-header — скрыта, открывается бургером */
+  .site-header .site-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-bg-secondary);
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .site-header .site-nav.active {
+    display: block;
+  }
+  
+  .site-header .nav-list {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+  
+  .site-header .nav-link {
+    display: block;
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-border);
+    text-align: center;
+    border-radius: var(--radius-sm);
+  }
+  
+  /* ✅ НАВИГАЦИЯ ДЛЯ AUTH-СТРАНИЦ — НЕ СКРЫВАЕМ, А УПАКОВЫВАЕМ */
+  .header .nav {
+    display: flex !important;
+    position: static !important;
+    background: transparent !important;
+    margin-left: auto;
+  }
+  
+  .header .nav-list {
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    justify-content: flex-end !important;
+  }
+  
+  .header .nav-link {
+    padding: 4px 8px !important;
+    font-size: 13px !important;
+    border: 1px solid var(--color-border) !important;
+  }
+  
+  .header .menu-toggle {
+    display: none !important;
+  }
+  
+  /* Лейаут */
+  .layout-wrapper {
+    flex-direction: column;
+  }
+  
+  /* Фильтры — сверху */
+  .filters-sidebar {
+    width: 100%;
+    position: static;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--spacing-md);
+  }
+  
+  .filter-actions {
+    flex-direction: row;
+  }
+  
+  .filter-actions .btn {
+    flex: 1;
+  }
+  
+  /* Основной контент */
+  .movies-main,
+  .lists-page,
+  .movie-detail,
+  .auth-container {
+    padding: var(--spacing-md);
+  }
+  
+  .page-title,
+  .lists-page h1,
+  .auth-title {
+    font-size: var(--font-size-xl);
+  }
+  
+  /* Сетка — 2 колонки */
+  .movies-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+  }
+  
+  .movie-card img {
+    aspect-ratio: 3/4;
+  }
+  
+  .movie-info .title {
+    font-size: var(--font-size-sm);
+  }
+  
+  .movie-info .meta {
+    font-size: 12px;
+  }
+  
+  /* Кнопки действий — вертикально */
+  .movie-actions {
+    flex-direction: column;
+  }
+  
+  .movie-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .movie-actions .btn-remove {
+    order: -1;
+  }
+  
+  /* Страница фильма */
+  .movie-header {
+    grid-template-columns: 1fr;
+    padding: var(--spacing-md);
+    text-align: center;
+  }
+  
+  .movie-poster img {
+    max-width: 200px;
+  }
+  
+  .movie-meta h1 {
+    font-size: var(--font-size-xl);
+  }
+  
+  .movie-actions {
+    justify-content: center;
+  }
+  
+  .reviews-section {
+    padding: var(--spacing-md);
+  }
+  
+  /* Табы */
+  .tab {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+  
+  /* Авторизация */
+  .auth-container {
+    margin: var(--spacing-lg);
+    padding: var(--spacing-lg);
+  }
+}
+
+/* 📐 768px — Планшеты */
+@media (min-width: 768px) {
+  :root {
+    --font-size-base: 15px;
+  }
+  
+  /* Сетка — 3 колонки */
+  .movies-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  /* Страница фильма */
+  .movie-header {
+    grid-template-columns: 200px 1fr;
+    align-items: start;
+    text-align: left;
+  }
+  
+  .movie-poster img {
+    max-width: none;
+    margin: 0;
+  }
+  
+  .movie-meta h1 {
+    text-align: left;
+  }
+  
+  .movie-actions {
+    justify-content: flex-start;
+  }
+  
+  /* Кнопки действий — горизонтально */
+  .movie-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .movie-actions button {
+    flex: 1 1 auto;
+    min-width: 80px;
+  }
+  
+  .movie-actions .btn-remove {
+    flex: 0 0 auto;
+    width: auto;
+    order: 0;
+  }
+  
+  /* Фильтры */
+  .filters-sidebar {
+    width: 250px;
+  }
+}
+
+/* 💻 1024px — Ноутбуки */
+@media (min-width: 1024px) {
+  :root {
+    --font-size-base: 16px;
+  }
+  
+  .search-form {
+    max-width: 500px;
+  }
+  
+  .filters-sidebar {
+    width: var(--sidebar-width);
+  }
+  
+  /* Сетка — 4 колонки */
+  .movies-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .movie-card img {
+    aspect-ratio: 2/3;
+  }
+  
+  /* Страница фильма */
+  .movie-header {
+    grid-template-columns: 250px 1fr;
+    gap: var(--spacing-xxl);
+    padding: var(--spacing-xxl);
+  }
+  
+  .movie-meta h1 {
+    font-size: 2rem;
+  }
+  
+  .tab {
+    padding: var(--spacing-sm) var(--spacing-xl);
+  }
+}
+
+/* 🖥️ 1440px — Большие десктопы */
+@media (min-width: 1440px) {
+  :root {
+    --font-size-base: 17px;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+  }
+  
+  .site-header,
+  .header {
+    padding: var(--spacing-lg);
+  }
+  
+  .search-form {
+    max-width: 600px;
+  }
+  
+  .filters-sidebar {
+    width: 320px;
+    padding: var(--spacing-xl);
+  }
+  
+  .movies-main,
+  .lists-page,
+  .movie-detail {
+    padding: var(--spacing-xxl);
+  }
+  
+  /* Сетка — 5 колонок */
+  .movies-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--spacing-xl);
+  }
+  
+  .movie-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(229, 9, 20, 0.3);
+  }
+  
+  /* Страница фильма */
+  .movie-header {
+    grid-template-columns: 300px 1fr;
+    padding: var(--spacing-xxl);
+  }
+  
+  .movie-meta h1 {
+    font-size: 2.5rem;
+  }
+  
+  .movie-description {
+    font-size: var(--font-size-lg);
+  }
+  
+  .reviews-section {
+    padding: var(--spacing-xxl);
+  }
+  
+  .tab {
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-size: var(--font-size-lg);
+  }
+  
+  .auth-container {
+    max-width: 450px;
+    padding: var(--spacing-xxl);
+  }
+}
+
+/* ==================== ДОПОЛНИТЕЛЬНЫЕ УЛУЧШЕНИЯ ==================== */
+
+/* Плавный скролл */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Фокус для доступности */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Скроллбар для фильтров */
+.filters-sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) var(--color-bg-secondary);
+}
+
+.filters-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.filters-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.filters-sidebar::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 3px;
+}
+
+/* Анимация появления карточек */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.movies-grid .movie-card {
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+.movies-grid .movie-card:nth-child(1) { animation-delay: 0.05s; }
+.movies-grid .movie-card:nth-child(2) { animation-delay: 0.1s; }
+.movies-grid .movie-card:nth-child(3) { animation-delay: 0.15s; }
+.movies-grid .movie-card:nth-child(4) { animation-delay: 0.2s; }
+.movies-grid .movie-card:nth-child(5) { animation-delay: 0.25s; }
+.movies-grid .movie-card:nth-child(6) { animation-delay: 0.3s; }
+.movies-grid .movie-card:nth-child(7) { animation-delay: 0.35s; }
+.movies-grid .movie-card:nth-child(8) { animation-delay: 0.4s; }
+.movies-grid .movie-card:nth-child(9) { animation-delay: 0.45s; }
+.movies-grid .movie-card:nth-child(10) { animation-delay: 0.5s; }
+
+/* Тач-устройства */
+@media (hover: none) and (pointer: coarse) {
+  .nav-link,
+  .tab,
+  .movie-actions button,
+  .btn {
+    min-height: 44px;
+  }
+  
+  .movie-card:hover {
+    transform: none;
+  }
+  
+  .movie-card:hover img {
+    transform: none;
+  }
+}
+
+/* Уменьшенная анимация */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
+}
+
+/* ==================== ФИКС: ПОИСК НЕ СЖИМАЕТСЯ ==================== */
+
+/* На главной странице (.site-header) — поиск не должен быть слишком узким */
+@media (min-width: 600px) and (max-width: 768px) {
+  .site-header .search-form {
+    min-width: 250px !important;
+    flex: 1 1 250px !important;
+  }
+  
+  .site-header .search-form input {
+    min-width: 180px;
+  }
+  
+  /* Навигация переносится на новую строку если нужно */
+  .site-header .site-nav {
+    margin-left: auto;
+  }
+  
+  .site-header .nav-list {
+    gap: var(--spacing-xs);
+  }
+  
+  .site-header .nav-link {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* На очень узких экранах (до 600px) — поиск на всю ширину */
+@media (max-width: 599px) {
+  .site-header {
+    flex-wrap: wrap;
+  }
+  
+  .site-header .logo {
+    flex: 0 0 auto;
+  }
+  
+  .site-header .menu-toggle {
+    order: 2;
+  }
+  
+  .site-header .search-form {
+    order: 1;
+    width: 100% !important;
+    max-width: none !important;
+    margin-top: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .site-header .site-nav {
+    order: 3;
+    width: 100%;
+    margin-left: 0 !important;
+    margin-top: var(--spacing-sm);
+  }
+  
+  .site-header .nav-list {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .site-header .nav-link {
+    display: block;
+    text-align: center;
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+  }
+}
+
+/* На десктопе (от 769px) — поиск нормального размера */
+@media (min-width: 769px) {
+  .site-header .search-form {
+    flex: 1 1 400px !important;
+    max-width: 500px !important;
+  }
+}
+
+/* ==================== БУРГЕР МЕНЮ — НА 768px И НИЖЕ ==================== */
+
+/* Показываем бургер на планшетах и мобильных (до 768px) */
+@media (max-width: 768px) {
+  /* Бургер виден */
+  .site-header .menu-toggle {
+    display: block !important;
+    order: 3;
+    margin-left: auto;
+  }
+  
+  /* Шапка переносится */
+  .site-header {
+    flex-wrap: wrap;
+  }
+  
+  /* Поиск на всю ширину под логотипом */
+  .site-header .search-form {
+    order: 3;
+    width: 100% !important;
+    max-width: none !important;
+    margin-top: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  /* Навигация скрыта по умолчанию */
+  .site-header .site-nav {
+    display: none !important;
+    order: 4;
+    width: 100%;
+    margin-left: 0 !important;
+    margin-top: var(--spacing-sm);
+    background: var(--color-bg-secondary);
+    padding: var(--spacing-md);
+    border-top: 1px solid var(--color-border);
+  }
+  
+  /* Когда бургер открыт — показываем меню */
+  .site-header .site-nav.active {
+    display: block !important;
+  }
+  
+  .site-header .nav-list {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .site-header .nav-link {
+    display: block;
+    padding: var(--spacing-md);
+    text-align: center;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    width: 100%;
+  }
+  
+  /* Фильтры сверху */
+  .filters-sidebar {
+    width: 100%;
+    position: static;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+  
+  /* Сетка фильмов — 2 колонки */
+  .movies-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* На очень узких (до 400px) — 1 колонка */
+@media (max-width: 400px) {
+  .movies-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* На десктопе (от 769px) — скрываем бургер, показываем меню */
+@media (min-width: 769px) {
+  .site-header .menu-toggle {
+    display: none !important;
+  }
+  
+  .site-header .site-nav {
+    display: flex !important;
+    width: auto;
+    margin-left: auto;
+  }
+  
+  .site-header .nav-list {
+    flex-direction: row;
+    gap: var(--spacing-sm);
+  }
+  
+  .site-header .nav-link {
+    display: inline-flex;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border: none;
+    width: auto;
+    text-align: left;
+  }
+  
+  .site-header .search-form {
+    order: 0;
+    width: auto;
+    max-width: 500px;
+    margin: 0;
+  }
+}
+
+/* ==================== ФИКС: ВОЗВРАЩАЕМ ФИЛЬТРЫ И ФИЛЬМЫ ==================== */
+
+/* На планшетах (768px-1024px) — бургер есть, но фильтры и фильмы как были */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Бургер виден */
+  .site-header .menu-toggle {
+    display: block !important;
+  }
+  
+  /* Навигация скрыта */
+  .site-header .site-nav {
+    display: none !important;
+  }
+  
+  .site-header .site-nav.active {
+    display: block !important;
+  }
+  
+  /* ✅ ФИЛЬТРЫ СБОКУ (как было) */
+  .filters-sidebar {
+    width: 250px !important;
+    position: sticky !important;
+    height: calc(100vh - var(--header-height)) !important;
+    border-right: 1px solid var(--color-border) !important;
+    border-bottom: none !important;
+  }
+  
+  /* ✅ ЛЕЙАУТ: фильтры слева, контент справа */
+  .layout-wrapper {
+    flex-direction: row !important;
+  }
+  
+  /* ✅ ФИЛЬМЫ: 3 колонки (как было) */
+  .movies-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  /* Основной контент */
+  .movies-main {
+    padding: var(--spacing-lg) !important;
+  }
+  
+  /* Карточки фильмов */
+  .movie-card img {
+    aspect-ratio: 2/3 !important;
+  }
+  
+  .movie-info .title {
+    font-size: var(--font-size-base) !important;
+  }
+}
+
+/* На мобильных (до 767px) — фильтры сверху, фильмы в 2 колонки */
+@media (max-width: 767px) {
+  /* Бургер виден */
+  .site-header .menu-toggle {
+    display: block !important;
+  }
+  
+  /* Навигация скрыта */
+  .site-header .site-nav {
+    display: none !important;
+  }
+  
+  .site-header .site-nav.active {
+    display: block !important;
+  }
+  
+  /* Поиск на всю ширину */
+  .site-header .search-form {
+    order: 3;
+    width: 100% !important;
+    max-width: none !important;
+    margin-top: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  /* ✅ ФИЛЬТРЫ СВЕРХУ (на мобильных) */
+  .filters-sidebar {
+    width: 100% !important;
+    position: static !important;
+    height: auto !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--color-border) !important;
+  }
+  
+  /* ✅ ЛЕЙАУТ: вертикально */
+  .layout-wrapper {
+    flex-direction: column !important;
+  }
+  
+  /* ✅ ФИЛЬМЫ: 2 колонки на мобильных */
+  .movies-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: var(--spacing-sm) !important;
+  }
+  
+  .movie-card img {
+    aspect-ratio: 3/4 !important;
+  }
+  
+  .movie-info .title {
+    font-size: var(--font-size-sm) !important;
+  }
+  
+  .movie-info .meta {
+    font-size: 12px !important;
+  }
+}
+
+/* На очень узких (до 480px) — 1 колонка фильмов */
+@media (max-width: 480px) {
+  .movies-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* На десктопе (от 1025px) — всё как было */
+@media (min-width: 1025px) {
+  .site-header .menu-toggle {
+    display: none !important;
+  }
+  
+  .site-header .site-nav {
+    display: flex !important;
+  }
+  
+  .filters-sidebar {
+    width: var(--sidebar-width) !important;
+  }
+  
+  .movies-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Мои списки — FILMHUB</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Шапка -->
+  <header class="site-header" role="banner">
+    <a href="/" class="logo">FILM<span>HUB</span></a>
+    <nav class="site-nav" aria-label="Основная навигация">
+      <ul class="nav-list">
+        <li><a href="/index.html" class="nav-link">Каталог</a></li>
+        <li><a href="/lists.html" class="nav-link">Мои списки</a></li>
+        <li><a href="/login.html" class="nav-link" id="authLink">Войти</a></li>
+      </ul>
+    </nav>
+    <button class="menu-toggle" aria-label="Меню">☰</button>
+  </header>
+
+  <!-- Основной контент -->
+  <main class="lists-page">
+    <h1>Мои списки</h1>
+    
+    <!-- Табы для переключения между списками -->
+    <!-- В lists.html замените блок с табами на этот: -->
+<div class="tabs" role="tablist" aria-label="Типы списков">
+  <button 
+    class="tab active" 
+    role="tab" 
+    aria-selected="true" 
+    aria-controls="watchlist-panel"
+    data-list="watchlist"
+  >
+    Буду смотреть (<span class="tab-count" data-count="watchlist">0</span>)
+  </button>
+  <button 
+    class="tab" 
+    role="tab" 
+    aria-selected="false" 
+    aria-controls="favorites-panel"
+    data-list="favorites"
+  >
+    Избранное (<span class="tab-count" data-count="favorites">0</span>)
+  </button>
+  <button 
+    class="tab" 
+    role="tab" 
+    aria-selected="false" 
+    aria-controls="watched-panel"
+    data-list="watched"
+  >
+    Просмотрено (<span class="tab-count" data-count="watched">0</span>)
+  </button>
+</div>
+
+<!-- Контейнер для фильмов -->
+<div id="moviesList" class="movies-grid" role="tabpanel" aria-live="polite">
+  <div class="loading">Загрузка...</div>
+</div>
+
+   
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.service.js"></script>
+  <script src="/js/lists.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+DROP TABLE IF EXISTS ratings CASCADE;
+
+CREATE TABLE ratings (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  movie_id INTEGER REFERENCES movies(id) ON DELETE CASCADE,
+  rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 10),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(user_id, movie_id)
+);
