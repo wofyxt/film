@@ -23,6 +23,17 @@ app.use(cors());
 app.use(express.json());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+const compression = require('compression');
+
+// Включаем gzip + brotli (Node.js 11+ поддерживает brotli нативно)
+app.use(compression({
+  threshold: 0, // Сжимать всё, даже маленькие файлы
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) return false;
+    return compression.filter(req, res);
+  }
+}));
+
 // Статические файлы из корня проекта (на уровень выше)
 app.use(express.static(path.join(__dirname, '..')));
 

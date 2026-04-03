@@ -121,10 +121,11 @@ return `
     aria-label="Открыть фильм: ${title} (${year} год)" 
     data-movie-id="${id}"
   >
-    <img 
-      src="${poster}" 
+    <img class="observed-img"
+      data-src="${poster}" 
+      src=""
       alt="Постер фильма: ${title} (${year} год)" 
-      loading="lazy"
+     
       width="200"
       height="300"
     >
@@ -139,6 +140,8 @@ return `
 `;
     }).join('');
     
+initLazyLoading();
+
   } catch (error) {
     container.innerHTML = '<p class="error">Ошибка загрузки фильмов</p>';
     console.error('Ошибка loadMovies:', error);
@@ -224,9 +227,10 @@ return `
     data-movie-id="${id}"
   >
     <img 
-      src="${poster}" 
+    class="observed-img"
+      data-src="${poster}"
+      src="" 
       alt="Постер фильма: ${title} (${year} год)" 
-      loading="lazy"
       width="200"
       height="300"
     >
@@ -240,4 +244,75 @@ return `
   </article>
 `;
   }).join('');
+   initLazyLoading();
+}
+
+// lazy-images.js
+document.addEventListener('DOMContentLoaded', () => {
+  const images = document.querySelectorAll('.observed-img');
+  
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          img.src = img.dataset.src; // Подставляем реальный src
+          img.classList.add('loaded');
+          obs.unobserve(img); // Отключаем наблюдение после загрузки
+        }
+      });
+    }, {
+      rootMargin: '50px 0px', // Начинаем грузить за 50px до появления
+      threshold: 0.1
+    });
+
+    images.forEach(img => observer.observe(img));
+  } else {
+    // Фолбэк для старых браузеров: грузим сразу
+    images.forEach(img => img.src = img.dataset.src);
+  }
+});
+// Глобальная функция для ленивой загрузки
+function initLazyLoading() {
+  const images = document.querySelectorAll('.observed-img');
+  console.log(`🔍 Найдено изображений для lazy loading: ${images.length}`);
+  
+  if (!('IntersectionObserver' in window)) {
+    images.forEach(img => {
+      if (img.dataset.src) img.src = img.dataset.src;
+    });
+    return;
+  }
+  
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach((entry, index) => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        
+        // 🔥 Добавляем задержку перед загрузкой (медленнее появление)
+        setTimeout(() => {
+          img.src = img.dataset.src;
+          
+          img.onload = () => {
+            // Плавное появление картинки
+            img.style.transition = 'opacity 1.5s ease-in';
+            img.classList.add('loaded');
+          };
+          
+          img.onerror = () => {
+            img.classList.add('error');
+            console.error('Не удалось загрузить:', img.dataset.src);
+          };
+          
+        }, index * 100); // Каждая следующая картинка загружается на 100ms позже
+        
+        obs.unobserve(img);
+      }
+    });
+  }, {
+    rootMargin: '100px 0px', /* Начинаем грузить ЗАРАНЕЕ (было 50px) */
+    threshold: 0.01
+  });
+  
+  images.forEach(img => observer.observe(img));
 }

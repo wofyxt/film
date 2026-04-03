@@ -385,10 +385,12 @@ input::placeholder, textarea::placeholder {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   overflow: hidden;
-  transition: all var(--transition-normal);
   cursor: pointer;
   display: flex;
   flex-direction: column;
+   opacity: 0;
+  transform: translateY(30px);
+  animation: 0.6s ease-out forwards;
 }
 
 .movie-card:hover {
@@ -1935,5 +1937,31 @@ body.color-scheme-blue-cyan {
   /* Скрываем оригинальную кнопку вне меню, если вдруг осталась */
   .site-header > .accessibility-toggle {
     display: none;
+  }
+}
+
+.observed-img {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  min-height: 200px; /* Резервируем место, чтобы не прыгала вёрстка */
+  background: black;
+}
+.observed-img.loaded {
+  opacity: 1;
+}
+
+
+.movie-card:nth-child(1) { animation-delay: 0.1s; }
+.movie-card:nth-child(2) { animation-delay: 0.2s; }
+.movie-card:nth-child(3) { animation-delay: 0.3s; }
+.movie-card:nth-child(4) { animation-delay: 0.4s; }
+.movie-card:nth-child(5) { animation-delay: 0.5s; }
+.movie-card:nth-child(6) { animation-delay: 0.6s; }
+/* и так далее... */
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
