@@ -1606,6 +1606,7 @@ textarea:focus-visible {
 }
 
 /* ==================== ПАНЕЛЬ ДОСТУПНОСТИ (ВЕРСИЯ ДЛЯ СЛАБОВИДЯЩИХ) ==================== */
+/* ==================== ПАНЕЛЬ ДОСТУПНОСТИ (ВЕРСИЯ ДЛЯ СЛАБОВИДЯЩИХ) ==================== */
 .accessibility-toggle {
   background: none;
   border: none;
@@ -1648,6 +1649,8 @@ textarea:focus-visible {
   align-items: center;
   gap: var(--spacing-lg);
   transition: transform 0.3s ease;
+  width: 100%; /* гарантия ширины */
+  box-sizing: border-box;
 }
 
 .accessibility-toolbar[hidden] {
@@ -1662,12 +1665,14 @@ textarea:focus-visible {
   padding: var(--spacing-xs) var(--spacing-md);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
+  flex-wrap: wrap; /* разрешить перенос внутри группы */
 }
 
 .accessibility-group span {
   font-weight: 600;
   color: var(--color-text-secondary);
   margin-right: var(--spacing-xs);
+  white-space: nowrap;
 }
 
 .accessibility-btn {
@@ -1679,6 +1684,7 @@ textarea:focus-visible {
   cursor: pointer;
   font-size: var(--font-size-sm);
   transition: all var(--transition-fast);
+  white-space: nowrap;
 }
 
 .accessibility-btn:hover,
@@ -1705,6 +1711,70 @@ textarea:focus-visible {
 .close-panel:hover,
 .close-panel:focus {
   background: var(--color-primary-hover);
+}
+
+/* 📱 АДАПТАЦИЯ ДЛЯ ПЛАНШЕТОВ И МОБИЛЬНЫХ (до 768px) */
+@media (max-width: 768px) {
+  .site-header .accessibility-toggle,
+  .header .accessibility-toggle {
+    order: 2;
+    margin-left: auto;
+  }
+  .site-header .menu-toggle {
+    order: 3;
+  }
+  .accessibility-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    top: auto;
+    bottom: 0;
+    border-top: 2px solid var(--color-primary);
+    border-bottom: none;
+    padding: var(--spacing-md);
+    gap: var(--spacing-sm);
+  }
+  .accessibility-group {
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .close-panel {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/* 📱 ОЧЕНЬ УЗКИЕ ЭКРАНЫ (до 480px) — полная адаптация */
+@media (max-width: 480px) {
+  .accessibility-toolbar {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-xs);
+  }
+  .accessibility-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm);
+  }
+  .accessibility-group span {
+    white-space: normal;
+    text-align: center;
+    margin-bottom: var(--spacing-xxs);
+  }
+  .accessibility-btn {
+    width: 100%;
+    text-align: center;
+    white-space: normal;
+    word-break: keep-all;
+    padding: var(--spacing-sm) var(--spacing-xs);
+  }
+  .scheme-btn {
+    width: auto;
+    min-width: 60px;
+  }
+  .close-panel {
+    width: 100%;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1814,4 +1884,56 @@ body.color-scheme-blue-cyan {
   --color-border-light: #5588dd;
   --color-warning: #cc8800;
   --color-focus: #ff0000;
+}
+
+/* ==================== ЗАМЕНИТЕЛИ ИЗОБРАЖЕНИЙ ДЛЯ РЕЖИМА СКРЫТИЯ ==================== */
+.image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-tertiary);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  padding: var(--spacing-md);
+  min-height: 100px;
+  width: 100%;
+  word-break: break-word;
+  font-style: italic;
+}
+
+.movie-card .image-placeholder {
+  aspect-ratio: 2/3;
+  min-height: auto;
+}
+
+.movie-poster .image-placeholder {
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+/* Кнопка «глаз» внутри бургер-меню на мобильных */
+@media (max-width: 768px) {
+  .site-header .nav-list .nav-item-accessibility {
+    width: 100%;
+  }
+  .site-header .nav-list .accessibility-toggle {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-secondary);
+    font-size: 1.2rem;
+  }
+  .site-header .nav-list .accessibility-toggle:hover {
+    background: var(--color-primary-light);
+  }
+  /* Скрываем оригинальную кнопку вне меню, если вдруг осталась */
+  .site-header > .accessibility-toggle {
+    display: none;
+  }
 }
