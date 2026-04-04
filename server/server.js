@@ -1,4 +1,61 @@
 require('dotenv').config();
+const bcrypt = require('bcrypt');
+// === RATE LIMITING + ВАЛИДАЦИЯ  ===
+const rateLimit = require('express-rate-limit');
+const { body, param, query, validationResult } = require('express-validator');
+const validator = require('validator');
+
+// Rate Limit: 100 запросов в минуту с одного IP
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 минута
+  max: 100, // лимит запросов
+  message: { success: false, error: { message: 'Слишком много запросов, попробуйте позже', code: 'RATE_LIMITED' } },
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.ip // лимит по IP
+});
+
+// Middleware для валидации и санитизации
+const sanitizeInput = (req, res, next) => {
+  // Санитизация тела запроса
+  if (req.body) {
+    Object.keys(req.body).forEach(key => {
+      if (typeof req.body[key] === 'string') {
+        req.body[key] = validator.escape(req.body[key].trim());
+      }
+    });
+  }
+  // Санитизация query-параметров
+  if (req.query) {
+    Object.keys(req.query).forEach(key => {
+      if (typeof req.query[key] === 'string') {
+        req.query[key] = validator.escape(req.query[key].trim());
+      }
+    });
+  }
+  // Санитизация route-параметров
+  if (req.params) {
+    Object.keys(req.params).forEach(key => {
+      if (typeof req.params[key] === 'string') {
+        req.params[key] = validator.escape(req.params[key].trim());
+      }
+    });
+  }
+  next();
+};
+
+// Middleware для обработки ошибок валидации
+const handleValidationErrors = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      error: { message: 'Ошибка валидации', details: errors.array(), code: 'VALIDATION_FAILED' }
+    });
+  }
+  next();
+};
+// === КОНЕЦ БЛОКА БЕЗОПАСНОСТИ ===
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -479,7 +536,190 @@ app.get('/api/movies', async (req, res) => {
   res.json({ success: true, data: { movies } });
 });
 */
+// ==================== ADMIN MIDDLEWARE ====================
+const verifyAdmin = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(' ')[1];
+  
+  if (!token) {
+    return res.status(401).json({ success: false, error: { message: 'Требуется авторизация', code: 'UNAUTHORIZED' } });
+  }
 
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userResult = await pool.query('SELECT role FROM users WHERE id = $1', [decoded.id]);
+    
+    if (userResult.rows.length === 0 || userResult.rows[0].role !== 'admin') {
+      return res.status(403).json({ success: false, error: { message: 'Доступ запрещен. Требуется роль администратора.', code: 'FORBIDDEN' } });
+    }
+    
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(401).json({ success: false, error: { message: 'Неверный или просроченный токен', code: 'INVALID_TOKEN' } });
+  }
+};
+
+// ==================== ADMIN ROUTES ====================
+
+// 🔐 Авторизация администратора
+app.post('/api/admin/auth', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const userRes = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+
+    if (userRes.rows.length === 0) {
+      return res.status(401).json({ success: false, error: { message: 'Неверные учетные данные', code: 'AUTH_INVALID' } });
+    }
+
+    const user = userRes.rows[0];
+    if (user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: { message: 'Доступ запрещен. У вас нет прав администратора.', code: 'NOT_ADMIN' } });
+    }
+
+    const isValid = await bcrypt.compare(password, user.password);
+    if (!isValid) {
+      return res.status(401).json({ success: false, error: { message: 'Неверные учетные данные', code: 'AUTH_INVALID' } });
+    }
+
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+    res.json({
+      success: true,
+      data: {
+        token,
+        user: { id: user.id, username: user.username, email: user.email, role: user.role }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message, code: 'ADMIN_AUTH_FAILED' } });
+  }
+});
+
+// 🎬 Управление фильмами (CRUD)
+app.get('/api/admin/movies', verifyAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT m.id, m.title, m.description, m.year, m.poster_url, m.created_at, 
+             g.name as genre, g.id as genre_id
+      FROM movies m 
+      LEFT JOIN genres g ON m.genre_id = g.id 
+      ORDER BY m.id DESC
+    `);
+    res.json({ success: true, data: { movies: result.rows } });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message, code: 'FETCH_ADMIN_MOVIES_FAILED' } });
+  }
+});
+
+app.post('/api/admin/movies', verifyAdmin, async (req, res) => {
+  try {
+    const { title, description, year, genre, genre_id, poster_url } = req.body;
+    let finalGenreId = genre_id;
+
+    if (!finalGenreId && genre) {
+      const gRes = await pool.query('SELECT id FROM genres WHERE name ILIKE $1', [genre.trim()]);
+      if (gRes.rows.length > 0) {
+        finalGenreId = gRes.rows[0].id;
+      } else {
+        const newGenre = await pool.query('INSERT INTO genres (name) VALUES ($1) RETURNING id', [genre.trim()]);
+        finalGenreId = newGenre.rows[0].id;
+      }
+    }
+
+    const result = await pool.query(
+      `INSERT INTO movies (title, description, year, genre_id, poster_url) 
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [title, description, year, finalGenreId, poster_url]
+    );
+    res.status(201).json({ success: true, data: { movie: result.rows[0] } });
+  } catch (error) {
+    res.status(400).json({ success: false, error: { message: error.message, code: 'CREATE_ADMIN_MOVIE_FAILED' } });
+  }
+});
+
+app.put('/api/admin/movies/:id', verifyAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, year, genre, genre_id, poster_url } = req.body;
+    let finalGenreId = genre_id;
+
+    if (!finalGenreId && genre) {
+      const gRes = await pool.query('SELECT id FROM genres WHERE name ILIKE $1', [genre.trim()]);
+      if (gRes.rows.length > 0) finalGenreId = gRes.rows[0].id;
+      else {
+        const newGenre = await pool.query('INSERT INTO genres (name) VALUES ($1) RETURNING id', [genre.trim()]);
+        finalGenreId = newGenre.rows[0].id;
+      }
+    }
+
+    const result = await pool.query(
+      `UPDATE movies SET title=$1, description=$2, year=$3, genre_id=$4, poster_url=$5 
+       WHERE id=$6 RETURNING *`,
+      [title, description, year, finalGenreId, poster_url, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: { message: 'Фильм не найден', code: 'MOVIE_NOT_FOUND' } });
+    }
+    res.json({ success: true, data: { movie: result.rows[0] } });
+  } catch (error) {
+    res.status(400).json({ success: false, error: { message: error.message, code: 'UPDATE_ADMIN_MOVIE_FAILED' } });
+  }
+});
+
+app.delete('/api/admin/movies/:id', verifyAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('DELETE FROM movies WHERE id = $1 RETURNING id', [req.params.id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: { message: 'Фильм не найден', code: 'MOVIE_NOT_FOUND' } });
+    }
+    res.json({ success: true, message: 'Фильм успешно удален' });
+  } catch (error) {
+    res.status(400).json({ success: false, error: { message: error.message, code: 'DELETE_ADMIN_MOVIE_FAILED' } });
+  }
+});
+
+// 💬 Управление комментариями
+app.get('/api/admin/comments', verifyAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT r.id, m.title as movie_title, u.username, r.review as text, r.created_at
+      FROM ratings r
+      LEFT JOIN movies m ON r.movie_id = m.id
+      LEFT JOIN users u ON r.user_id = u.id
+      WHERE r.review IS NOT NULL AND r.review != ''
+      ORDER BY r.created_at DESC
+    `);
+    res.json({ success: true, data: { comments: result.rows } });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message, code: 'FETCH_ADMIN_COMMENTS_FAILED' } });
+  }
+});
+
+app.delete('/api/admin/comments/:id', verifyAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('DELETE FROM ratings WHERE id = $1 RETURNING id', [req.params.id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: { message: 'Комментарий не найден', code: 'COMMENT_NOT_FOUND' } });
+    }
+    res.json({ success: true, message: 'Комментарий успешно удален' });
+  } catch (error) {
+    res.status(400).json({ success: false, error: { message: error.message, code: 'DELETE_ADMIN_COMMENT_FAILED' } });
+  }
+});
+
+// 👥 Просмотр пользователей
+app.get('/api/admin/users', verifyAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, username, email, created_at FROM users ORDER BY created_at DESC'
+    );
+    res.json({ success: true, data: { users: result.rows } });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { message: error.message, code: 'FETCH_ADMIN_USERS_FAILED' } });
+  }
+});
 // ==================== ЗАПУСК СЕРВЕРА ====================
 const PORT = process.env.PORT || 3000;
 

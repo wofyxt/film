@@ -79,7 +79,7 @@ const API = {
     return this.request('/lists');
   },
   removeFromList(movieId, listType) {
-  return this.request(`/api/lists/${movieId}/${listType}`, {
+  return this.request(`/lists/${movieId}/${listType}`, {
     method: 'DELETE'
   });
 }

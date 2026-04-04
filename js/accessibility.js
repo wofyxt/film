@@ -341,5 +341,6 @@
     repositionAccessibilityToggle();
     updateButtonsState();
     window.addEventListener('resize', () => repositionAccessibilityToggle());
+    
   });
 })();

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход в админку — FilmRec</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script defer src="/js/accessibility.js"></script>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Перейти к основному контенту</a>
+
+  <header class="header">
+    <a href="/" class="logo">Film<span>Rec</span></a>
+    <button class="accessibility-toggle" aria-label="Версия для слабовидящих" title="Версия для слабовидящих">👁️</button>
+  </header>
+
+  <main id="main-content" class="auth-container">
+    <h2 class="auth-title">Вход в панель администратора</h2>
+    <div id="alert" class="alert" role="alert" aria-live="polite"></div>
+
+    <form id="adminLoginForm">
+      <div class="form-group">
+        <label for="adminEmail">Email администратора</label>
+        <input type="email" id="adminEmail" placeholder="admin@example.com" required aria-describedby="emailHelp">
+        <span id="emailHelp" class="visually-hidden">Введите email, зарегистрированный как администратор</span>
+      </div>
+      <div class="form-group">
+        <label for="adminPassword">Пароль</label>
+        <input type="password" id="adminPassword" placeholder="Введите пароль" required>
+      </div>
+      <button type="submit" class="btn">Войти в админку</button>
+    </form>
+
+    <div class="auth-footer">
+      <p><a href="/index.html">← Вернуться на сайт</a></p>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2026 FilmRec. Только для персонала.</p>
+  </footer>
+
+  <script src="/js/auth.service.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

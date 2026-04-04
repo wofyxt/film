@@ -65,19 +65,13 @@ function initBurgerMenu() {
 
 function updateAuthLink() {
   const authLink = document.getElementById('authLink');
-  if (authLink) {
-    if (API.getToken()) {
-      authLink.textContent = 'Выйти';
-      authLink.href = '#';
-      authLink.onclick = (e) => {
-        e.preventDefault();
-        if (typeof logout === 'function') logout();
-      };
-    } else {
-      authLink.textContent = 'Войти';
-      authLink.href = '/login.html';
-      authLink.onclick = null;
-    }
+  if (API.getToken()) {
+    authLink.textContent = 'Выйти';
+    authLink.href = '#';
+    authLink.onclick = (e) => {
+      e.preventDefault();
+      logout();
+    };
   }
 }
 

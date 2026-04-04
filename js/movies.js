@@ -54,7 +54,7 @@ function updateAuthLink() {
     authLink.href = '#';
     authLink.onclick = (e) => {
       e.preventDefault();
-      if (typeof logout === 'function') logout();
+      logout();
     };
   }
 }

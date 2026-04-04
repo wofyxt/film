@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Панель администратора — FilmRec</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script defer src="/js/accessibility.js"></script>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Перейти к основному контенту</a>
+
+  <header class="site-header">
+    <a href="/" class="logo">Film<span>Rec</span> <span class="admin-badge">Admin</span></a>
+    <nav class="site-nav" aria-label="Навигация админки">
+      <ul class="nav-list">
+        <li><a href="/index.html" class="nav-link">На сайт</a></li>
+        <li><a href="#" class="nav-link" id="adminLogoutLink">Выйти</a></li>
+      </ul>
+    </nav>
+    <button class="accessibility-toggle" aria-label="Версия для слабовидящих" title="Версия для слабовидящих">👁️</button>
+    <button class="menu-toggle" aria-expanded="false" aria-controls="site-navigation" aria-label="Открыть меню">☰</button>
+  </header>
+
+  <main id="main-content" class="admin-page" role="main" tabindex="-1">
+    <h1>Панель администратора</h1>
+
+    <div class="tabs" role="tablist" aria-label="Разделы админки">
+      <button class="tab active" role="tab" aria-selected="true" aria-controls="movies-panel" id="movies-tab" data-section="movies">🎬 Фильмы</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="comments-panel" id="comments-tab" data-section="comments">💬 Комментарии</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="users-panel" id="users-tab" data-section="users">👥 Пользователи</button>
+    </div>
+
+    <!-- Секция: Фильмы -->
+    <section id="movies-panel" role="tabpanel" aria-labelledby="movies-tab" class="admin-section">
+      <div class="admin-header">
+        <h2>Управление каталогом</h2>
+        <button id="addMovieBtn" class="btn btn-primary">+ Добавить фильм</button>
+      </div>
+      <div id="moviesTableContainer" class="table-container" aria-live="polite">
+        <p class="loading">Загрузка списка фильмов...</p>
+      </div>
+    </section>
+
+    <!-- Секция: Комментарии -->
+    <section id="comments-panel" role="tabpanel" aria-labelledby="comments-tab" class="admin-section" hidden>
+      <h2>Модерация комментариев</h2>
+      <div id="commentsTableContainer" class="table-container" aria-live="polite">
+        <p class="loading">Загрузка комментариев...</p>
+      </div>
+    </section>
+
+    <!-- Секция: Пользователи -->
+    <section id="users-panel" role="tabpanel" aria-labelledby="users-tab" class="admin-section" hidden>
+      <h2>Зарегистрированные пользователи</h2>
+      <div id="usersTableContainer" class="table-container" aria-live="polite">
+        <p class="loading">Загрузка пользователей...</p>
+      </div>
+    </section>
+
+    <!-- Модальное окно для добавления/редактирования фильма -->
+    <dialog id="movieModal" class="admin-modal" aria-labelledby="modalTitle">
+      <form id="movieForm">
+        <h3 id="modalTitle">Добавить фильм</h3>
+        <input type="hidden" id="movieId" name="id">
+        
+        <div class="form-group">
+          <label for="movieTitle">Название</label>
+          <input type="text" id="movieTitle" name="title" required>
+        </div>
+        <div class="form-group">
+          <label for="movieYear">Год выпуска</label>
+          <input type="number" id="movieYear" name="year" min="1900" max="2099" required>
+        </div>
+        <div class="form-group">
+          <label for="movieGenre">Жанр</label>
+          <input type="text" id="movieGenre" name="genre" required>
+        </div>
+        <div class="form-group">
+          <label for="moviePoster">URL постера</label>
+          <input type="url" id="moviePoster" name="poster_url">
+        </div>
+        <div class="form-group">
+          <label for="movieDesc">Описание</label>
+          <textarea id="movieDesc" name="description" rows="4" required></textarea>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" id="closeModalBtn">Отмена</button>
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+      </form>
+    </dialog>
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2026 FilmRec. Панель администратора.</p>
+  </footer>
+
+  <!-- Регион для уведомлений -->
+  <div id="liveRegion" class="visually-hidden" aria-live="polite" aria-atomic="true" role="status"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/admin.js"></script>
+  <script src="/js/auth.service.js"></script> 
+</body>
+</html>
